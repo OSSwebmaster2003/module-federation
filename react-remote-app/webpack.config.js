@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 export default {
   mode: "development",
-  entry: "./src/index.js",
+  entry: "./src/bootstrap.js",
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
@@ -34,11 +34,15 @@ export default {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: "babel-loader",
-      },
-      {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              "@babel/preset-env",
+              ["@babel/preset-react", { runtime: "automatic" }], // ✅ fixed
+            ],
+          },
+        },
       },
     ],
   },
@@ -50,7 +54,7 @@ export default {
       name: "reactRemoteApp",
       filename: "remoteEntry.js",
       exposes: {
-        "./HelloRemote": "./src/components/HelloRemote.jsx",
+        "./HelloRemoteElement": "./src/bootstrap.js",
       },
       shared: {
         react: { singleton: true, eager: true, requiredVersion: "^18.0.0" },

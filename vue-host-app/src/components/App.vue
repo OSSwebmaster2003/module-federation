@@ -8,7 +8,9 @@
     </div>
 
     <div class="remote-zone">
-      <component :is="remoteComponent" v-if="remoteComponent" />
+      <component :is="remoteVueComponent" v-if="remoteVueComponent" />
+
+      <hello-remote v-if="showReactRemote"></hello-remote>
     </div>
   </div>
 </template>
@@ -16,17 +18,19 @@
 <script setup>
 import { ref } from "vue";
 
-const remoteComponent = ref(null);
+const remoteVueComponent = ref(null);
+const showReactRemote = ref(false);
 
 const loadVueRemote = async () => {
+  showReactRemote.value = false; // hide React web component
   const module = await import("vueRemoteApp/HelloRemote");
-  remoteComponent.value = module.default;
+  remoteVueComponent.value = module.default;
 };
 
 const loadReactRemote = async () => {
-  const module = await import("reactRemoteApp/HelloRemote");
-  const ReactWrapper = (await import("../utils/ReactWrapper.js")).default;
-  remoteComponent.value = () => ReactWrapper(module.default);
+  remoteVueComponent.value = null;
+  await import("reactRemoteApp/HelloRemoteElement");
+  showReactRemote.value = true;
 };
 </script>
 
